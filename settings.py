@@ -54,7 +54,6 @@ class Settings(object):
         """
         :return: String
         """
-        """ Application Name """
         return self.__AppName
 
     @app_name.setter

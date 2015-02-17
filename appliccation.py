@@ -65,10 +65,11 @@ class Application():
         """program loop for controller."""
         self.logger.info("eventLoop has started.")
 
-        gpio = GPIO(debug=False)
-        ledPin = 13
-        ledState = gpio.HIGH
-        gpio.pinMode(ledPin, gpio.OUTPUT)
+        if LINUX:
+            gpio = GPIO(debug=False)
+            ledPin = 13
+            ledState = gpio.HIGH
+            gpio.pinMode(ledPin, gpio.OUTPUT)
 
         while True:
 
@@ -79,14 +80,16 @@ class Application():
                     log_delta = (datetime.now() - tc.last_log_time) > timedelta(seconds=tc.update_interval)
 
                     if sample_delta:
-                        gpio.digitalWrite(ledPin, ledState)
-                        ledState = gpio.LOW if ledState == gpio.HIGH else gpio.HIGH
+                        if LINUX:
+                            gpio.digitalWrite(ledPin, ledState)
+                            ledState = gpio.LOW if ledState == gpio.HIGH else gpio.HIGH
                         tc.add_temp_history()
                         tc.last_sample_time = datetime.now()
 
                     if log_delta:
-                        gpio.digitalWrite(ledPin, ledState)
-                        ledState = gpio.LOW if ledState == gpio.HIGH else gpio.HIGH
+                        if LINUX:
+                            gpio.digitalWrite(ledPin, ledState)
+                            ledState = gpio.LOW if ledState == gpio.HIGH else gpio.HIGH
                         tc.store_temperature()
                         tc.last_log_time = datetime.now()
             except:
