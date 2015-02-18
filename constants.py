@@ -16,7 +16,7 @@ __windows = 'Windows'
 __linux = 'Linux'
 __platform = platform.system()
 
-if __platform is __windows:
+if __platform == __windows:
     PLATFORM = False
     WINDOWS = True
     LINUX = False
@@ -24,7 +24,7 @@ if __platform is __windows:
     LOG_LOCATION = "./"
     APP_DB = LOG_LOCATION + APP_NAME + ".db"
 
-if __platform is __linux:
+if __platform == __linux:
     PLATFORM = True
     WINDOWS = False
     LINUX = True
