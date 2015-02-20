@@ -51,7 +51,7 @@ class Thermocouple:
         self.__sample_interval = p_sample_interval
         self.temperature_history = []
 
-        # if we are working under the linux os initialize the MAX31855
+        # if we are working under the linux os initialize the MAX31855 TC
         if LINUX:
             self.__max31855 = max(self.__cs, self.__clk, self.__do, units="f")
 

@@ -2,7 +2,7 @@
 import logging
 from wiringx86 import GPIOEdison as GPIO
 from constants import *
-from settings import Settings as AppSettings
+from settings import AppSettings
 from datetime import datetime, timedelta
 from time import sleep
 
@@ -11,9 +11,6 @@ class Application():
     """
     Main application class
     """
-
-    # Application settings
-    data_logger = None
 
     # create logger for application
     logger = logging.getLogger(APP_NAME)
@@ -67,32 +64,37 @@ class Application():
 
         if LINUX:
             gpio = GPIO(debug=False)
-            ledPin = 13
-            ledState = gpio.HIGH
-            gpio.pinMode(ledPin, gpio.OUTPUT)
+            led_pin = 13
+            led_state = gpio.HIGH
+            gpio.pinMode(led_pin, gpio.OUTPUT)
 
         while True:
 
             try:
                 for tc in self.data_logger.thermocouples:
 
-                    sample_delta = (datetime.now() - tc.last_sample_time) > timedelta(seconds=tc.sample_interval)
-                    log_delta = (datetime.now() - tc.last_log_time) > timedelta(seconds=tc.update_interval)
+                    sample_delta = \
+                        (datetime.now() - tc.last_sample_time) > timedelta(seconds=tc.tc_settings.sample_interval)
+
+                    log_delta = (datetime.now() - tc.last_log_time) > timedelta(seconds=tc.tc_settings.update_interval)
 
                     if sample_delta:
                         if LINUX:
-                            gpio.digitalWrite(ledPin, ledState)
-                            ledState = gpio.LOW if ledState == gpio.HIGH else gpio.HIGH
+                            gpio.digitalWrite(led_pin, led_state)
+                            led_state = gpio.LOW if led_state == gpio.HIGH else gpio.HIGH
                         tc.add_temp_history()
                         tc.last_sample_time = datetime.now()
 
                     if log_delta:
                         if LINUX:
-                            gpio.digitalWrite(ledPin, ledState)
-                            ledState = gpio.LOW if ledState == gpio.HIGH else gpio.HIGH
+                            gpio.digitalWrite(led_pin, led_state)
+                            led_state = gpio.LOW if led_state == gpio.HIGH else gpio.HIGH
                         tc.store_temperature()
                         tc.last_log_time = datetime.now()
-            except:
+
+            except Exception as e:
+                if DEBUG:
+                    print e
                 pass
             finally:
                 # slow the event loop down to interval defined by Settings.py
