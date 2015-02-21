@@ -3,7 +3,6 @@ import logging
 from tc import Thermocouple
 from models import *
 from constants import *
-from constants import *
 
 module_logger = logging.getLogger(APP_NAME + ".Settings")
 
@@ -21,8 +20,6 @@ class AppSettings(object):
 
         self.__get_settings()
         self.__get_thermocouples_from_db()
-
-        a = 1
 
     @property
     def thermocouples(self):
@@ -68,7 +65,7 @@ class AppSettings(object):
         Retrieve all thermocouples from the ThermocoupleSettings table and append it to the thermocouples class property
         :return: None
         """
-        database.connect()
+        database.connect()  # connect to the database via peewee ORM
 
         # add all thermocouples to self.thermocouples array
         for tc in ThermocoupleSettings.select():

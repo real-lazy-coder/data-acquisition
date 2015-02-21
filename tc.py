@@ -101,10 +101,10 @@ class Thermocouple(object):
 
             self.temperature_history = []  # clear the array
 
-        except Exception:
+        except Exception as e:
             module_logger.error("Error writing to local database: " + str(Exception.message))
             if DEBUG:
-                print Exception.message
+                print e
         finally:
             database.close()
 

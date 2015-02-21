@@ -46,7 +46,7 @@ class DataLog(BaseModel):
         order_by = ('tc',)
 
 
-def create_tables():
+def __create_tables():
     """
     Simple utility function to crate tables
     :return: None
@@ -57,7 +57,7 @@ def create_tables():
     database.close()  # close the database connection
 
 
-def populate_database():
+def __populate_database():
     """
     Populate the database
     :return:
@@ -89,5 +89,5 @@ def populate_database():
 
 
 if __name__ == '__main__':
-    create_tables()
-    populate_database()
+    __create_tables()
+    __populate_database()
