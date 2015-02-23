@@ -6,6 +6,9 @@ from settings import AppSettings
 from datetime import datetime, timedelta
 from time import sleep
 
+if LINUX:
+    from pyupm_i2clcd import *
+
 
 class Application():
     """

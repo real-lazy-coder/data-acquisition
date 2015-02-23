@@ -36,6 +36,10 @@ class Thermocouple(object):
             print "Thermocouple initialized."
 
     @property
+    def tc_temp(self):
+        return self.__get_temp()
+
+    @property
     def thermocouple_temp_f(self):
         return self.__thermocouple_temp_f
 
@@ -64,7 +68,9 @@ class Thermocouple(object):
         self.__last_log_time = value
 
     def __get_temp(self):
-        """Returns the current temperature."""
+        """Returns the current temperature.
+        :rtype : float
+        """
 
         if LINUX:
             tc_temp = self.__max31855.get()
