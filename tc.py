@@ -76,7 +76,7 @@ class Thermocouple(object):
             tc_temp = self.__max31855.get()
 
         if WINDOWS:
-            tc_temp = randint(-30, 30)
+            tc_temp = float(randint(-30, 30))
 
         if DEBUG:
             print "Current Temp:\t", tc_temp
