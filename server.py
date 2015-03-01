@@ -9,10 +9,14 @@ app_settings = AppSettings()
 
 @app.route('/')
 def hello_world():
-    return render_template('index.html')
+    try:
+        return render_template('index.html')
+    except Exception as e:
+        print e
+        return e
 
 
-@app.route('/history')
+@app.route('/api/history')
 def get_history():
     data_log = []
     try:
@@ -36,7 +40,7 @@ def get_history():
     return jsonify({'log_data': data_log})
 
 
-@app.route('/temp')
+@app.route('/api/temp')
 def display_temp():
     """
     Retrieves the current temperature from the controller

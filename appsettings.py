@@ -117,7 +117,7 @@ class AppSettings(object):
 
     @staticmethod
     def __populate_database():
-        db = database.connect()
+        database.connect()
 
         setting_1 = Settings(name='app_name', description='Application Name', value='Data Acquisition')
         setting_2 = Settings(name='event_loop_interval',

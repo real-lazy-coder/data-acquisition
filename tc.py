@@ -20,20 +20,31 @@ class Thermocouple(object):
     __last_sample_time = datetime.now()  # last date/time a sample temperature was taken
     __last_log_time = datetime.now()  # last date/time a log was taken
 
-    def __init__(self, p_tc_settings=None):
+    def __init__(self, p_tc_settings):
         self.tc_settings = p_tc_settings
         self.temperature_history = []
 
         # if we are working under the linux os initialize the MAX31855 TC
         if LINUX:
-            self.__max31855 = max(self.tc_settings.cs, self.tc_settings.clk, self.tc_settings.do, units="f")
+            try:
+                self.__max31855 = max(p_cs_pin=self.tc_settings.cs, p_clock_pin=self.tc_settings.clk,
+                                      p_data_pin=self.tc_settings.do, p_units="f")
 
-        # log initialization to logger
-        module_logger.info("Thermocouple Initialized")
+                if DEBUG:
+                    print 'cs: ' + str(self.__max31855.cs_pin)
+                    print 'clock: ' + str(self.__max31855.clock_pin)
+                    print 'data: ' + str(self.__max31855.data_pin)
+                    print 'units: ' + str(self.__max31855.units)
+
+                # log initialization to logger
+                module_logger.info("Thermocouple Initialized: " + self.tc_settings.name)
+            except Exception as e:
+                module_logger.error(e)
+                module_logger.info('Issues initializing the thermocouple')
 
         # if we are debugging update terminal
         if DEBUG:
-            print "Thermocouple initialized."
+            print "Thermocouple initialized: " + self.tc_settings.name
 
     @property
     def tc_temp(self):
@@ -73,7 +84,14 @@ class Thermocouple(object):
         """
 
         if LINUX:
-            tc_temp = self.__max31855.get()
+            try:
+                if DEBUG:
+                    module_logger.info('line before max31855.get()')
+                tc_temp = self.__max31855.get()
+            except Exception as e:
+                module_logger.info('Error getting temp from MAX31855: ')
+                module_logger.error(e)
+                raise e
 
         if WINDOWS:
             tc_temp = float(randint(-30, 30))
@@ -89,7 +107,11 @@ class Thermocouple(object):
 
     def add_temp_history(self):
         """Get the current temperature and store it into temp history."""
-        self.temperature_history.append(self.__get_temp())
+        try:
+            self.temperature_history.append(self.__get_temp())
+        except Exception as e:
+            module_logger.info("error appending to temperature_history.")
+            module_logger.error(e)
 
     def store_temperature(self):
         """ Writes the average temperature """
@@ -108,7 +130,8 @@ class Thermocouple(object):
             self.temperature_history = []  # clear the array
 
         except Exception as e:
-            module_logger.error("Error writing to local database: " + str(Exception.message))
+            module_logger.info("Error writing to local database: ")
+            module_logger.error(e)
             if DEBUG:
                 print e
         finally:
@@ -117,9 +140,13 @@ class Thermocouple(object):
 
 if __name__ == '__main__':
     database.connect()
-    tc = Thermocouple(ThermocoupleSettings.get())
+    t = []
+    for tc in ThermocoupleSettings.select():
+        t.append(Thermocouple(tc))
     database.close()
-    tc.add_temp_history()
-    tc.add_temp_history()
-    tc.add_temp_history()
-    tc.store_temperature()
+
+    for tc in t:
+        tc.add_temp_history()
+        tc.add_temp_history()
+        tc.add_temp_history()
+        tc.store_temperature()

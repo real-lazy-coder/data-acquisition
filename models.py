@@ -27,7 +27,7 @@ class ThermocoupleSettings(BaseModel):
     name = CharField(unique=True)
     description = TextField()
     do = IntegerField()
-    ck = IntegerField()
+    cs = IntegerField()
     clk = IntegerField()
     update_interval = FloatField()
     sample_interval = FloatField()
@@ -76,7 +76,7 @@ def __populate_database():
     setting_2.save()  # save setting to database
 
     # Thermocouple table
-    thermocouple_1 = ThermocoupleSettings(name='freezer', description='freezer thermocouple', do=3, ck=4, clk=5,
+    thermocouple_1 = ThermocoupleSettings(name='freezer', description='freezer thermocouple', do=3, cs=4, clk=5,
                                           update_interval=55, sample_interval=5)
 
     thermocouple_1.save()  # save thermocouple to database

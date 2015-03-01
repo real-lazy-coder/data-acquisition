@@ -69,8 +69,11 @@ class AppSettings(object):
 
         # add all thermocouples to self.thermocouples array
         for tc in ThermocoupleSettings.select():
-            t = Thermocouple(tc)
-            self.thermocouples.append(t)
+            self.thermocouples.append(Thermocouple(tc))
+
+        if DEBUG:
+            print "thermocouples: " + str(self.thermocouples.__len__())
+        module_logger.info("thermocouples: " + str(self.thermocouples.__len__()))
 
         database.close()
 

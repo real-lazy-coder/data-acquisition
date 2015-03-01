@@ -6,8 +6,8 @@ from settings import AppSettings
 from datetime import datetime, timedelta
 from time import sleep
 
-if LINUX:
-    from pyupm_i2clcd import *
+# if LINUX:
+#     from pyupm_i2clcd import *
 
 
 class Application():
@@ -28,6 +28,21 @@ class Application():
         if DEBUG:
             print "Logger has been configured."
         self.logger.info("Logger has been configured")
+
+        self.logger.info("PLATFORM: " + str(PLATFORM))
+        self.logger.info("WINDOWS: " + str(WINDOWS))
+        self.logger.info("LINUX: " + str(LINUX))
+        self.logger.info("DEBUG: " + str(DEBUG))
+        self.logger.info("LOG_LOCATION: " + str(LOG_LOCATION))
+        self.logger.info("APP_DB: " + str(APP_DB))
+
+        if DEBUG:
+            print "PLATFORM: " + str(PLATFORM)
+            print "WINDOWS: " + str(WINDOWS)
+            print "LINUX: " + str(LINUX)
+            print "DEBUG: " + str(DEBUG)
+            print "LOG_LOCATION: " + str(LOG_LOCATION)
+            print "APP_DB: " + str(APP_DB)
 
         self.data_logger = AppSettings()
 
@@ -75,29 +90,32 @@ class Application():
 
             try:
                 for tc in self.data_logger.thermocouples:
-
+                    test = 0
                     sample_delta = \
                         (datetime.now() - tc.last_sample_time) > timedelta(seconds=tc.tc_settings.sample_interval)
 
+                    test = 1
                     log_delta = (datetime.now() - tc.last_log_time) > timedelta(seconds=tc.tc_settings.update_interval)
 
+                    if DEBUG:
+                        print 'sample_delta: ' + str(sample_delta)
+                        print 'log_delta: ' + str(log_delta)
+                    test = 2
                     if sample_delta:
-                        if LINUX:
-                            gpio.digitalWrite(led_pin, led_state)
-                            led_state = gpio.LOW if led_state == gpio.HIGH else gpio.HIGH
+                        test = 2.3
+                        # error here below
                         tc.add_temp_history()
+                        test = 2.4
                         tc.last_sample_time = datetime.now()
-
+                    test = 3
                     if log_delta:
-                        if LINUX:
-                            gpio.digitalWrite(led_pin, led_state)
-                            led_state = gpio.LOW if led_state == gpio.HIGH else gpio.HIGH
                         tc.store_temperature()
                         tc.last_log_time = datetime.now()
 
             except Exception as e:
                 if DEBUG:
-                    print e
+                    print "test: " + str(test) + " | "
+                self.logger.error("test: " + str(test) + " | ")
                 pass
             finally:
                 # slow the event loop down to interval defined by Settings.py

@@ -1,6 +1,9 @@
 #!/usr/bin/env python
+import logging
 from constants import *
 from wiringx86 import GPIOEdison as GPIO
+
+module_logger = logging.getLogger("application.MAX31855")
 
 
 class MAX31855(object):
@@ -10,27 +13,33 @@ class MAX31855(object):
      - A [Raspberry Pi](http://www.raspberrypi.org/)
     """
 
-    def __init__(self, cs_pin, clock_pin, data_pin, units="f"):
+    def __init__(self, p_cs_pin, p_clock_pin, p_data_pin, p_units="f"):
         """
         Initialize Soft (Bitbang) SPI Bus
-        :param cs_pin: Chip Select (CS) | Slave Select (SS) pin (Any GPIO)
-        :param clock_pin: Clock (SCLK / SCK / CLK) pin (Any GPIO)
-        :param data_pin: Data input (SO / MOSI / DO) pin (Any GPIO)
-        :param units: (optional) unit of measurement to return.  ("f" (default) | "c" | "k")
+        :param p_cs_pin: Chip Select (CS) | Slave Select (SS) pin (Any GPIO)
+        :param p_clock_pin: Clock (SCLK / SCK / CLK) pin (Any GPIO)
+        :param p_data_pin: Data input (SO / MOSI / DO) pin (Any GPIO)
+        :param p_units: (optional) unit of measurement to return.  ("f" (default) | "c" | "k")
         :return: None
         """
 
         self.__gpio = GPIO(debug=False)
-        self.cs_pin = cs_pin
-        self.clock_pin = clock_pin
-        self.data_pin = data_pin
-        self.units = units
+        self.cs_pin = int(p_cs_pin)
+        self.clock_pin = int(p_clock_pin)
+        self.data_pin = int(p_data_pin)
+        self.units = p_units
         self.data = None
 
-        # Initialize needed GPIO
+        # print data when in debug mode
         if DEBUG:
-            print self.__gpio.OUTPUT
+            print 'gpio: ' + str(self.__gpio)
+            print 'cs_pin: ' + str(self.cs_pin)
+            print 'clock_pin: ' + str(self.clock_pin)
+            print 'data_pin: ' + str(self.data_pin)
+            print 'output: ' + str(self.__gpio.OUTPUT)
+            print 'units: ' + str(self.units)
 
+        # Initialize needed GPIO
         self.__gpio.pinMode(self.cs_pin, self.__gpio.OUTPUT)
         self.__gpio.pinMode(self.clock_pin, self.__gpio.OUTPUT)
         self.__gpio.pinMode(self.data_pin, self.__gpio.INPUT)
@@ -51,20 +60,28 @@ class MAX31855(object):
 
     def read(self):
         """Reads 32 bits of the SPI bus & stores as an integer in self.data."""
-        bytes_to = 0
-        # Select the chip
-        self.__gpio.digitalWrite(self.cs_pin, self.__gpio.LOW)
-        # Read in 32 bits
-        for i in range(32):
-            self.__gpio.digitalWrite(self.clock_pin, self.__gpio.LOW)
-            bytes_to <<= 1
-            if self.__gpio.digitalRead(self.data_pin):
-                bytes_to |= 1
-            self.__gpio.digitalWrite(self.clock_pin, self.__gpio.HIGH)
-        # Deselect the chip
-        self.__gpio.digitalWrite(self.cs_pin, self.__gpio.HIGH)
-        # Save data
-        self.data = bytes_to
+        try:
+            if DEBUG:
+                print 'cs: ' + str(self.cs_pin)
+                print 'clk: ' + str(self.clock_pin)
+                print 'do: ' + str(self.data_pin)
+                print self.__gpio.LOW
+            bytes_to = 0
+            # Select the chip
+            self.__gpio.digitalWrite(self.cs_pin, self.__gpio.LOW)
+            # Read in 32 bits
+            for i in range(32):
+                self.__gpio.digitalWrite(self.clock_pin, self.__gpio.LOW)
+                bytes_to <<= 1
+                if self.__gpio.digitalRead(self.data_pin):
+                    bytes_to |= 1
+                self.__gpio.digitalWrite(self.clock_pin, self.__gpio.HIGH)
+            # Deselect the chip
+            self.__gpio.digitalWrite(self.cs_pin, self.__gpio.HIGH)
+            # Save data
+            self.data = bytes_to
+        except Exception as e:
+            module_logger.error(e)
 
     def check_errors(self, data_32=None):
         """Checks error bits to see if there are any SCV, SCG, or OC faults"""
