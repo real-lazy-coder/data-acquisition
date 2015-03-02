@@ -28,7 +28,7 @@ if __platform == __linux:
     PLATFORM = True
     WINDOWS = False
     LINUX = True
-    DEBUG = True
+    DEBUG = False
     LOG_LOCATION = "//media//application//"
     APP_DB = LOG_LOCATION + APP_NAME + ".db"
 

@@ -22,13 +22,11 @@ def get_history():
     try:
         database.connect
 
+        data_log.append({'series': ['tc']})
         for log in DataLog.select():
             json = {
-                'tc': log.tc.name,
-                'desc': log.tc.description,
-                'time': log.date_time,
-                'temp': log.temperature,
-                'uploaded': log.uploaded
+                'x': log.date_time,
+                'y': [log.temperature]
             }
             data_log.append(json)
 
@@ -57,4 +55,4 @@ def display_temp():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0')

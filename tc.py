@@ -40,7 +40,7 @@ class Thermocouple(object):
                 module_logger.info("Thermocouple Initialized: " + self.tc_settings.name)
             except Exception as e:
                 module_logger.error(e)
-                module_logger.info('Issues initializing the thermocouple')
+                module_logger.error('Issues initializing the thermocouple')
 
         # if we are debugging update terminal
         if DEBUG:
@@ -89,9 +89,8 @@ class Thermocouple(object):
                     module_logger.info('line before max31855.get()')
                 tc_temp = self.__max31855.get()
             except Exception as e:
-                module_logger.info('Error getting temp from MAX31855: ')
+                module_logger.error('Error getting temp from MAX31855: ')
                 module_logger.error(e)
-                raise e
 
         if WINDOWS:
             tc_temp = float(randint(-30, 30))
@@ -110,7 +109,7 @@ class Thermocouple(object):
         try:
             self.temperature_history.append(self.__get_temp())
         except Exception as e:
-            module_logger.info("error appending to temperature_history.")
+            module_logger.error("error appending to temperature_history.")
             module_logger.error(e)
 
     def store_temperature(self):
@@ -130,7 +129,7 @@ class Thermocouple(object):
             self.temperature_history = []  # clear the array
 
         except Exception as e:
-            module_logger.info("Error writing to local database: ")
+            module_logger.error("Error writing to local database: ")
             module_logger.error(e)
             if DEBUG:
                 print e

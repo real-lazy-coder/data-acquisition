@@ -6,8 +6,8 @@ from settings import AppSettings
 from datetime import datetime, timedelta
 from time import sleep
 
-# if LINUX:
-#     from pyupm_i2clcd import *
+if LINUX:
+    from pyupm_i2clcd import *
 
 
 class Application():
@@ -80,43 +80,38 @@ class Application():
         """program loop for controller."""
         self.logger.info("eventLoop has started.")
 
-        if LINUX:
-            gpio = GPIO(debug=False)
-            led_pin = 13
-            led_state = gpio.HIGH
-            gpio.pinMode(led_pin, gpio.OUTPUT)
+        # this causes errors ???
+        # TODO: add blinking led to application
+        # if LINUX:
+        #     gpio = GPIO(debug=False)
+        #     led_pin = 13
+        #     led_state = gpio.HIGH
+        #     gpio.pinMode(led_pin, gpio.OUTPUT)
 
         while True:
 
             try:
                 for tc in self.data_logger.thermocouples:
-                    test = 0
                     sample_delta = \
                         (datetime.now() - tc.last_sample_time) > timedelta(seconds=tc.tc_settings.sample_interval)
 
-                    test = 1
                     log_delta = (datetime.now() - tc.last_log_time) > timedelta(seconds=tc.tc_settings.update_interval)
 
                     if DEBUG:
                         print 'sample_delta: ' + str(sample_delta)
                         print 'log_delta: ' + str(log_delta)
-                    test = 2
+
                     if sample_delta:
-                        test = 2.3
                         # error here below
                         tc.add_temp_history()
-                        test = 2.4
                         tc.last_sample_time = datetime.now()
-                    test = 3
+
                     if log_delta:
                         tc.store_temperature()
                         tc.last_log_time = datetime.now()
 
             except Exception as e:
-                if DEBUG:
-                    print "test: " + str(test) + " | "
-                self.logger.error("test: " + str(test) + " | ")
-                pass
+                self.logger.error(e)
             finally:
                 # slow the event loop down to interval defined by Settings.py
                 # this helps manage processor utilization

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import logging
+from time import sleep
 from tc import Thermocouple
 from models import *
 from constants import *
@@ -78,4 +79,11 @@ class AppSettings(object):
         database.close()
 
 if __name__ == '__main__':
-    AppSettings()
+    app = AppSettings()
+
+    for tc in app.thermocouples:
+        for i in range(5):
+            tc.add_temp_history()
+            sleep(2)
+
+        tc.store_temperature()
