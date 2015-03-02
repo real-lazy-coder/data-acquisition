@@ -20,7 +20,7 @@ if __platform == __windows:
     PLATFORM = False
     WINDOWS = True
     LINUX = False
-    DEBUG = True
+    DEBUG = False
     LOG_LOCATION = "./"
     APP_DB = LOG_LOCATION + APP_NAME + ".db"
 

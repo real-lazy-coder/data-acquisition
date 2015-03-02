@@ -1,6 +1,8 @@
 from flask import Flask, jsonify, render_template
 from settings import AppSettings
 from models import *
+from datetime import datetime
+import  time
 
 app = Flask(__name__)
 
@@ -22,12 +24,11 @@ def get_history():
     try:
         database.connect
 
-        data_log.append({'series': ['tc']})
         for log in DataLog.select():
-            json = {
-                'x': log.date_time,
-                'y': [log.temperature]
-            }
+            json = [
+                log.date_time,
+                log.temperature
+            ]
             data_log.append(json)
 
     except Exception as e:
@@ -44,14 +45,18 @@ def display_temp():
     Retrieves the current temperature from the controller
     :return: float
     """
-    temp_data = {}
+    temp_data = []
     try:
         for tc in app_settings.thermocouples:
-            temp_data.update({'temp': tc.tc_temp})
+            n = datetime.utcnow()
+            unix_time = int(time.mktime(n.timetuple()))
+            temp_data.append([unix_time, tc.tc_temp])
     except Exception as e:
         print e
     finally:
-        return jsonify(temp_data)
+        a = jsonify({'temp': temp_data})
+        return a
+
 
 
 if __name__ == '__main__':
