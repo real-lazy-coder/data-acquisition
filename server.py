@@ -1,8 +1,8 @@
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request
 from settings import AppSettings
 from models import *
 from datetime import datetime
-import  time
+import time
 
 app = Flask(__name__)
 
@@ -25,7 +25,7 @@ def get_history():
         database.connect
 
         for log in DataLog.select():
-            n = datetime_to_timestamp(log.date_time)*1000
+            n = datetime_to_timestamp(log.date_time) * 1000
             json = [
                 n,
                 log.temperature
@@ -40,6 +40,48 @@ def get_history():
     return jsonify({'log_data': data_log})
 
 
+@app.route('/api/history/search')
+def api_history_search():
+    min = request.args.get('min')
+    max = request.args.get('max')
+
+    # check if min and max have value
+    if min is None or max is None:
+        return 'query string error'
+
+    # convert min and max to epoch seconds from epoch milliseconds
+    min_seconds = int(min) / 1000
+    max_seconds = int(max) / 1000
+
+    # convert min_seconds and max_seconds to datetime string from epoch seconds
+    min_datetime_string = datetime.utcfromtimestamp(min_seconds).strftime('%Y-%m-%d %H:%M:%S')
+    max_datetime_string = datetime.utcfromtimestamp(max_seconds).strftime('%Y-%m-%d %H:%M:%S')
+
+    min_datetime = datetime.utcfromtimestamp(min_seconds)
+    max_datetime = datetime.utcfromtimestamp(max_seconds)
+
+    data_log = []
+    try:
+        database.connect
+
+        for log in DataLog.select().where((DataLog.date_time >= min_datetime) & (DataLog.date_time <= max_datetime)):
+            n = datetime_to_timestamp(log.date_time) * 1000
+            json = [
+                n,
+                log.temperature
+            ]
+            data_log.append(json)
+
+    except Exception as e:
+        if DEBUG:
+            print e
+    finally:
+        database.close()
+    return jsonify({'log_data': data_log})
+
+
+
+
 @app.route('/api/temp')
 def display_temp():
     """
@@ -49,8 +91,10 @@ def display_temp():
     temp_data = []
     try:
         for tc in app_settings.thermocouples:
-            n = datetime.utcnow()
-            unix_time = int(time.mktime(n.timetuple())*1000)
+            # n = datetime.utcnow()
+            # unix_time = int(time.mktime(n.timetuple())*1000)
+            # convert the time to unix time in milliseconds
+            unix_time = datetime_to_timestamp(datetime.now()) * 1000
             temp_data.append([unix_time, tc.tc_temp])
     except Exception as e:
         print e
@@ -77,6 +121,7 @@ def datetime_to_timestamp(dt):
     """Converts a datetime object to UTC timestamp"""
 
     return int(utc_mktime(dt.timetuple()))
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
