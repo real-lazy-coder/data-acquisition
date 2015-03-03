@@ -25,8 +25,9 @@ def get_history():
         database.connect
 
         for log in DataLog.select():
+            n = datetime_to_timestamp(log.date_time)*1000
             json = [
-                log.date_time,
+                n,
                 log.temperature
             ]
             data_log.append(json)
@@ -49,7 +50,7 @@ def display_temp():
     try:
         for tc in app_settings.thermocouples:
             n = datetime.utcnow()
-            unix_time = int(time.mktime(n.timetuple()))
+            unix_time = int(time.mktime(n.timetuple())*1000)
             temp_data.append([unix_time, tc.tc_temp])
     except Exception as e:
         print e
@@ -58,6 +59,24 @@ def display_temp():
         return a
 
 
+def utc_mktime(utc_tuple):
+    """Returns number of seconds elapsed since epoch
+
+    Note that no timezone are taken into consideration.
+
+    utc tuple must be: (year, month, day, hour, minute, second)
+
+    """
+
+    if len(utc_tuple) == 6:
+        utc_tuple += (0, 0, 0)
+    return time.mktime(utc_tuple) - time.mktime((1970, 1, 1, 0, 0, 0, 0, 0, 0))
+
+
+def datetime_to_timestamp(dt):
+    """Converts a datetime object to UTC timestamp"""
+
+    return int(utc_mktime(dt.timetuple()))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
