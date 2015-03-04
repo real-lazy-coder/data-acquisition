@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 import logging
-from wiringx86 import GPIOEdison as GPIO
-from constants import *
-from settings import AppSettings
 from datetime import datetime, timedelta
 from time import sleep
 
+from constants import *
+from settings import AppSettings
+
+
 if LINUX:
-    from pyupm_i2clcd import *
+    import pyupm_i2clcd as lcd
 
 
 class Application():
@@ -18,8 +19,15 @@ class Application():
     # create logger for application
     logger = logging.getLogger(APP_NAME)
 
+    # rgb lcd display
+    lcdDisplay = None
+
     def __init__(self):
         """ program setup and initialization. """
+
+        # if linux setup lcd
+        if LINUX:
+            self.lcd_setup()
 
         # Initialize loggerConfig
         self.logger_config()
@@ -49,8 +57,35 @@ class Application():
         # launch eventLoop
         self.event_loop()
 
+    def lcd_setup(self):
+        """
+        setup pyupm_i2clcd RGB LCD
+        # bus	i2c bus to use
+        # address	the slave address the lcd is registered on
+        # address	the slave address the rgb backlight is on
+        Jhd1313m1	(
+            int 	bus,
+            int 	lcdAddress = 0x3E,
+            int 	rgbAddress = 0x62
+        )
+        :return: None
+        """
+        self.lcdDisplay = lcd.Jhd1313m1(0, 0x3E, 0x62)
+
+        # set lcd cursor to (0,0)
+        self.lcdDisplay.setCursor(0, 0)
+        self.lcdDisplay.write('LCD Initialized')
+        # sleep to display initialization message
+        sleep(1)
+
     def logger_config(self):
         """configure logging settings"""
+
+        # update lcd if linux
+        if LINUX:
+            self.lcdDisplay.clear()
+            self.lcdDisplay.setCursor(0, 0)
+            self.lcdDisplay.write('Initializing\n logger...')
 
         # Set logging level to Debug
         self.logger.setLevel(logging.DEBUG)
@@ -76,6 +111,13 @@ class Application():
         self.logger.addHandler(file_handler)
         self.logger.addHandler(console_handler)
 
+        if LINUX:
+            self.lcdDisplay.clear()
+            self.lcdDisplay.setCursor(0, 0)
+            self.lcdDisplay.write('Logger\n Initialized.')
+            # sleep to display lcd message
+            sleep(1)
+
     def event_loop(self):
         """program loop for controller."""
         self.logger.info("eventLoop has started.")
@@ -83,10 +125,15 @@ class Application():
         # this causes errors ???
         # TODO: add blinking led to application
         # if LINUX:
-        #     gpio = GPIO(debug=False)
-        #     led_pin = 13
+        # gpio = GPIO(debug=False)
+        # led_pin = 13
         #     led_state = gpio.HIGH
         #     gpio.pinMode(led_pin, gpio.OUTPUT)
+
+        # clear lcd
+        if LINUX:
+            self.lcdDisplay.clear()
+            self.lcdDisplay.setCursor(0, 0)
 
         while True:
 
@@ -102,7 +149,12 @@ class Application():
                         print 'log_delta: ' + str(log_delta)
 
                     if sample_delta:
-                        # error here below
+                        # update lcd
+                        if LINUX:
+                            self.lcdDisplay.clear()
+                            self.lcdDisplay.setCursor(0, 0)
+                            self.lcdDisplay.write('Temp: ' + str(tc.tc_temp))
+
                         tc.add_temp_history()
                         tc.last_sample_time = datetime.now()
 
