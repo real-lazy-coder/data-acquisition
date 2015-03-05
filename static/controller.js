@@ -17,10 +17,7 @@ app.controller("HistoryCtrl", ['$scope', 'dataFactory', function ($scope, dataFa
             })
     }
 
-    $scope.status;
-    $scope.history;
 
-    getHistory();
 
 }]);
 

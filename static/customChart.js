@@ -17,6 +17,8 @@ $(function () {
 
             chart.series[0].setData(data.log_data);
             chart.hideLoading();
+
+            getLastPoint(chart);
         });
     }
 
@@ -50,7 +52,7 @@ $(function () {
             },
 
             subtitle: {
-                text: 'Displaying 1.7 million data points in Highcharts Stock by async server loading'
+                text: ''
             },
 
             rangeSelector: {
@@ -96,5 +98,20 @@ $(function () {
                 }
             }]
         });
+
+        //var chart = $('#container').highcharts();
+        getLastPoint($('#container').highcharts());
+
     });
 });
+
+function getLastPoint(chart) {
+    var series = chart.series[0];
+    setInterval(function () {
+        $.getJSON('api/temp/last_log_point', function (data) {
+            var x = data.point[0];
+            var y = data.point[1];
+            series.addPoint([x, y], true, true);
+        });
+    }, 60000);
+};

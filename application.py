@@ -8,6 +8,7 @@ from settings import AppSettings
 
 
 if LINUX:
+    # if we are on linux platform import upm lcd library
     import pyupm_i2clcd as lcd
 
 
@@ -118,6 +119,17 @@ class Application():
             # sleep to display lcd message
             sleep(1)
 
+    def update_lcd(self, status):
+        """
+        Update lcd screen
+        :return: None
+        """
+        if LINUX:
+            self.lcdDisplay.clear()
+            self.lcdDisplay.setCursor(0, 0)
+            self.lcdDisplay.write(status)
+
+
     def event_loop(self):
         """program loop for controller."""
         self.logger.info("eventLoop has started.")
@@ -127,13 +139,11 @@ class Application():
         # if LINUX:
         # gpio = GPIO(debug=False)
         # led_pin = 13
-        #     led_state = gpio.HIGH
+        # led_state = gpio.HIGH
         #     gpio.pinMode(led_pin, gpio.OUTPUT)
 
         # clear lcd
-        if LINUX:
-            self.lcdDisplay.clear()
-            self.lcdDisplay.setCursor(0, 0)
+        self.update_lcd('')
 
         while True:
 
@@ -150,10 +160,7 @@ class Application():
 
                     if sample_delta:
                         # update lcd
-                        if LINUX:
-                            self.lcdDisplay.clear()
-                            self.lcdDisplay.setCursor(0, 0)
-                            self.lcdDisplay.write('Temp: ' + str(tc.tc_temp))
+                        self.update_lcd('Temp: ' + str(tc.tc_temp))
 
                         tc.add_temp_history()
                         tc.last_sample_time = datetime.now()

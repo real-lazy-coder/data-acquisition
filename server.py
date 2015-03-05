@@ -1,8 +1,11 @@
-from flask import Flask, jsonify, render_template, request
-from settings import AppSettings
-from models import *
 from datetime import datetime
 import time
+
+from flask import Flask, jsonify, render_template, request
+
+from settings import AppSettings
+from models import *
+
 
 app = Flask(__name__)
 
@@ -28,7 +31,7 @@ def get_history():
             n = datetime_to_timestamp(log.date_time) * 1000
             json = [
                 n,
-                log.temperature
+                two_place_decimal(log.temperature)
             ]
             data_log.append(json)
 
@@ -68,7 +71,7 @@ def api_history_search():
             n = datetime_to_timestamp(log.date_time) * 1000
             json = [
                 n,
-                log.temperature
+                two_place_decimal(log.temperature)
             ]
             data_log.append(json)
 
@@ -80,6 +83,22 @@ def api_history_search():
     return jsonify({'log_data': data_log})
 
 
+@app.route('/api/temp/last_log_point')
+def last_log_point():
+    """
+    :return: Last point in sql database
+    """
+    point = []
+    try:
+        database.connect()
+        p = DataLog.select().order_by(DataLog.id.desc()).get()
+        point.append(datetime_to_timestamp(p.date_time) * 1000)
+        point.append(two_place_decimal(p.temperature))
+    except Exception as e:
+        return e
+    finally:
+        database.close()
+    return jsonify({'point': point})
 
 
 @app.route('/api/temp')
@@ -95,7 +114,7 @@ def display_temp():
             # unix_time = int(time.mktime(n.timetuple())*1000)
             # convert the time to unix time in milliseconds
             unix_time = datetime_to_timestamp(datetime.now()) * 1000
-            temp_data.append([unix_time, tc.tc_temp])
+            temp_data.append([unix_time, two_place_decimal(tc.tc_temp)])
     except Exception as e:
         print e
     finally:
@@ -121,6 +140,13 @@ def datetime_to_timestamp(dt):
     """Converts a datetime object to UTC timestamp"""
 
     return int(utc_mktime(dt.timetuple()))
+
+
+def two_place_decimal(f_point):
+    """
+    :return: float with 2 place decimal
+    """
+    return float("{0:.2f}".format(f_point))
 
 
 if __name__ == '__main__':
