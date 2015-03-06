@@ -12,7 +12,7 @@ $(function () {
         var chart = $('#container').highcharts();
 
         chart.showLoading('Loading data from server...');
-        $.getJSON('api/history/search?min=' + Math.round(e.min) +
+        $.getJSON('api/temp/history/search?min=' + Math.round(e.min) +
         '&max=' + Math.round(e.max), function (data) {
 
             chart.series[0].setData(data.log_data);
@@ -23,7 +23,7 @@ $(function () {
     }
 
     // See source code from the JSONP handler at https://github.com/highslide-software/highcharts.com/blob/master/samples/data/from-sql.php
-    $.getJSON('api/history', function (data) {
+    $.getJSON('api/temp/history', function (data) {
 
         // Add a null value for the end date
         //data = [].concat(data.log_data, [[Date.now(), null, null, null, null]]);

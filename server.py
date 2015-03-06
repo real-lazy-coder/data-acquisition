@@ -21,7 +21,7 @@ def hello_world():
         return e
 
 
-@app.route('/api/history')
+@app.route('/api/temp//history')
 def get_history():
     data_log = []
     try:
@@ -43,22 +43,18 @@ def get_history():
     return jsonify({'log_data': data_log})
 
 
-@app.route('/api/history/search')
+@app.route('/api/temp/history/search')
 def api_history_search():
-    min = request.args.get('min')
-    max = request.args.get('max')
+    search_min = request.args.get('min')
+    search_max = request.args.get('max')
 
     # check if min and max have value
-    if min is None or max is None:
+    if search_min is None or search_max is None:
         return 'query string error'
 
     # convert min and max to epoch seconds from epoch milliseconds
-    min_seconds = int(min) / 1000
-    max_seconds = int(max) / 1000
-
-    # convert min_seconds and max_seconds to datetime string from epoch seconds
-    min_datetime_string = datetime.utcfromtimestamp(min_seconds).strftime('%Y-%m-%d %H:%M:%S')
-    max_datetime_string = datetime.utcfromtimestamp(max_seconds).strftime('%Y-%m-%d %H:%M:%S')
+    min_seconds = int(search_min) / 1000
+    max_seconds = int(search_max) / 1000
 
     min_datetime = datetime.utcfromtimestamp(min_seconds)
     max_datetime = datetime.utcfromtimestamp(max_seconds)
@@ -99,6 +95,11 @@ def last_log_point():
     finally:
         database.close()
     return jsonify({'point': point})
+
+
+@app.route('settings')
+def settings():
+    return render_template('settings.html')
 
 
 @app.route('/api/temp')

@@ -22,6 +22,7 @@ class Application():
 
     # rgb lcd display
     lcdDisplay = None
+    lcdText = ''
 
     def __init__(self):
         """ program setup and initialization. """
@@ -75,7 +76,14 @@ class Application():
 
         # set lcd cursor to (0,0)
         self.lcdDisplay.setCursor(0, 0)
+
+        # assign text to lcd text
+        self.lcdText = 'LCD Initialized'
+
+        # write lcdText to screen
+        self.update_lcd(self.lcdText)
         self.lcdDisplay.write('LCD Initialized')
+
         # sleep to display initialization message
         sleep(1)
 
@@ -124,6 +132,7 @@ class Application():
         Update lcd screen
         :return: None
         """
+        # TODO: Add logic to catch lcd character limit [16, 2]
         if LINUX:
             self.lcdDisplay.clear()
             self.lcdDisplay.setCursor(0, 0)
@@ -133,14 +142,6 @@ class Application():
     def event_loop(self):
         """program loop for controller."""
         self.logger.info("eventLoop has started.")
-
-        # this causes errors ???
-        # TODO: add blinking led to application
-        # if LINUX:
-        # gpio = GPIO(debug=False)
-        # led_pin = 13
-        # led_state = gpio.HIGH
-        #     gpio.pinMode(led_pin, gpio.OUTPUT)
 
         # clear lcd
         self.update_lcd('')

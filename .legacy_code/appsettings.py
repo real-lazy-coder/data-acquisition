@@ -8,8 +8,6 @@ from constants import *
 
 module_logger = logging.getLogger("application.Settings")
 
-# TODO: Add 2 modes: Edison & Non-Edison for running on a computer
-
 
 class AppSettings(object):
     """ Describes attributes of the application """

@@ -55,11 +55,6 @@ class Thermocouple:
         if LINUX:
             self.__max31855 = max(self.__cs, self.__clk, self.__do, units="f")
 
-        # if we are working under the windows os, we are debugging.  Show dummy data.
-        if WINDOWS:
-            # TODO: Add windows dummy data
-            pass
-
         # log initialization to logger
         module_logger.info("Thermocouple Initialized")
 
