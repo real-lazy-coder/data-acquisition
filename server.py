@@ -21,7 +21,7 @@ def hello_world():
         return e
 
 
-@app.route('/api/temp//history')
+@app.route('/api/temp/history')
 def get_history():
     data_log = []
     try:
@@ -97,11 +97,6 @@ def last_log_point():
     return jsonify({'point': point})
 
 
-@app.route('settings')
-def settings():
-    return render_template('settings.html')
-
-
 @app.route('/api/temp')
 def display_temp():
     """
@@ -122,6 +117,27 @@ def display_temp():
         a = jsonify({'temp': temp_data})
         return a
 
+
+@app.route('/settings')
+def settings():
+    return render_template('settings.html')
+
+
+@app.route('/settings/reboot')
+def reboot():
+    """
+    Reboot the operating system
+    """
+    # TODO: Write reboot code
+    return 'Rebooting Unit...'
+
+
+@app.route('/settings/wifi')
+def wifi_setup():
+    """
+    Setup wifi on device
+    """
+    return 'Setup wifi...'
 
 def utc_mktime(utc_tuple):
     """Returns number of seconds elapsed since epoch
