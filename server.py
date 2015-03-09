@@ -1,11 +1,16 @@
-from datetime import datetime
+#!/usr/bin/env python
 import time
+from datetime import datetime
 
 from flask import Flask, jsonify, render_template, request
 
 from settings import AppSettings
 from models import *
 
+
+if LINUX:
+    # if we are on linux platform import upm lcd library
+    import pyupm_i2clcd as lcd
 
 app = Flask(__name__)
 
@@ -138,6 +143,27 @@ def wifi_setup():
     Setup wifi on device
     """
     return 'Setup wifi...'
+
+
+@app.route('/settings/change_lcd_color')
+def change_lcd_color():
+    """
+    Change the lcd display color
+    """
+    try:
+        r = request.args.get('red')  # red color
+        g = request.args.get('green')  # green color
+        b = request.args.get('blue')  # blue color
+
+        if r is None or g is None or b is None:
+            return render_template('colorchange.html')
+        if LINUX:
+            lcdDisplay = lcd.Jhd1313m1(0, 0x3E, 0x62)
+            lcdDisplay.setColor(r, g, b)
+        return 'LCD color changed'
+    except Exception as e:
+        return e
+
 
 def utc_mktime(utc_tuple):
     """Returns number of seconds elapsed since epoch
