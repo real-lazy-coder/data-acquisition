@@ -1,10 +1,3 @@
-var app = angular.module('DataLogger', []);
-
-app.config(['$interpolateProvider', function ($interpolateProvider) {
-    $interpolateProvider.startSymbol('{[');
-    $interpolateProvider.endSymbol(']}');
-}]);
-
 app.controller("HistoryCtrl", ['$scope', 'dataFactory', function ($scope, dataFactory) {
 
     function getHistory() {

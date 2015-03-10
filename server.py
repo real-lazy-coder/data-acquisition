@@ -2,7 +2,7 @@
 import time
 from datetime import datetime
 
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, url_for
 
 from settings import AppSettings
 from models import *
@@ -16,11 +16,14 @@ app = Flask(__name__)
 
 app_settings = AppSettings()
 
+if LINUX:
+    lcdDisplay = lcd.Jhd1313m1(0, 0x3E, 0x62)
+
 
 @app.route('/')
 def hello_world():
     try:
-        return render_template('index.html')
+        return render_template('base.html')
     except Exception as e:
         print e
         return e
@@ -158,11 +161,11 @@ def change_lcd_color():
         if r is None or g is None or b is None:
             return render_template('colorchange.html')
         if LINUX:
-            lcdDisplay = lcd.Jhd1313m1(0, 0x3E, 0x62)
-            lcdDisplay.setColor(r, g, b)
+            lcdDisplay.setColor(int(r), int(g), int(b))
         return 'LCD color changed'
     except Exception as e:
-        return e
+        print e
+        return 'error changing color'
 
 
 def utc_mktime(utc_tuple):

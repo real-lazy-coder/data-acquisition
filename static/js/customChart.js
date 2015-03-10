@@ -2,6 +2,7 @@
  * Created by brent on 3/3/2015.
  */
 
+var chart;
 
 $(function () {
     /**
