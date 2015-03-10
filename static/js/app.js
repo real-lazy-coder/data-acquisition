@@ -1,5 +1,6 @@
 // angular entry point
-var app = angular.module('DataLogger', ['ui.router', 'highcharts-ng']);
+//http://angular-js.in/angular-busy/
+var app = angular.module('DataLogger', ['ui.router', 'ngAnimate', 'cgBusy', 'toggle-switch']);
 
 // change the symbol syntax as to not conflict with jinja templates.
 app.config(function ($stateProvider, $urlRouterProvider, $interpolateProvider) {
@@ -14,5 +15,9 @@ app.config(function ($stateProvider, $urlRouterProvider, $interpolateProvider) {
         .state('home', {
             url: '/home',
             templateUrl: '../static/partials/home.html'
-        });
+        })
+        .state('settings', {
+            url: '/settings',
+            templateUrl: '../static/partials/settings.html'
+        })
 });

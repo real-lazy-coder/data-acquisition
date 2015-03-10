@@ -4,30 +4,33 @@
     <title>Data - Acquisition</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="{{url_for('static', filename='bootstrap-3.3.2-dist/css/bootstrap.min.css')}}" rel="stylesheet">
-    <!--<link href="{{url_for('static', filename='css/main.css')}}" rel="stylesheet">-->
+    <link href="{{url_for('static', filename='css/angular-busy.min.css')}}" rel="stylesheet">
+    <link href="{{url_for('static', filename='css/angular-toggle-switch-bootstrap-3.css')}}" rel="stylesheet">
+    <link href="{{url_for('static', filename='css/main.css')}}" rel="stylesheet">
 </head>
 <body ng-app="DataLogger">
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
+<nav class="navbar navbar-inverse navbar-fixed-top" ng-controller="NavbarController">
+    <div class="container">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
-                  aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">DAQ</a>
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">DAQ</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
-          <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
-          </ul>
-        </div><!--/.nav-collapse -->
-      </div>
-    </nav>
+            <ul class="nav navbar-nav">
+                <li ng-class="{ active: isActive('/home')}"><a href="#home">Home</a></li>
+                <li ng-class="{ active: isActive('/settings')}"><a href="#settings">Settings</a></li>
+                <li ng-class="{ active: isActive('/contact')}"><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</nav>
 <div class="container">
     <!-- angular ui-router views -->
     <div ui-view></div>
@@ -36,8 +39,11 @@
 <script src="{{url_for('static', filename='js/jquery-1.11.2.min.js')}}"></script>
 <!-- angular source -->
 <script src="{{url_for('static', filename='js/angular.min.js')}}"></script>
+<script src="{{url_for('static', filename='js/angular-sanitize.min.js')}}"></script>
+<script src="{{url_for('static', filename='js/angular-animate.min.js')}}"></script>
 <script src="{{url_for('static', filename='js/angular-ui-router.min.js')}}"></script>
-<script src="{{url_for('static', filename='js/directives/highcharts-ng.js')}}"></script>
+<script src="{{url_for('static', filename='js/angular-busy.min.js')}}"></script>
+<script src="{{url_for('static', filename='js/angular-toggle-switch.min.js')}}"></script>
 
 <!-- highcharts scripts -->
 <script src="{{url_for('static', filename='js/highstock.js')}}"></script>
@@ -48,82 +54,83 @@
 <script src="{{url_for('static', filename='js/app.js')}}"></script>
 
 <!--<script src="{{url_for('static', filename='js/controllers/mainController.js')}}"></script>-->
+<script src="{{url_for('static', filename='js/controllers/NavbarController.js')}}"></script>
 <script src="{{url_for('static', filename='js/controllers/ChartController.js')}}"></script>
 
 <!--<script>-->
 <!--//    var chart; // global-->
 
-    <!--/**-->
-     <!--* Request data from the server, add it to the graph and set a timeout to request again-->
-     <!--*/-->
-    <!--//    function requestCurrentTemp() {-->
-    <!--//        $.ajax({-->
-    <!--//            url: 'api/temp',-->
-    <!--//            success: function (point) {-->
-    <!--//                var series = chart.series[0],-->
-    <!--//                        shift = series.data.length > 20; // shift if the series is longer than 20-->
-    <!--//-->
-    <!--//                // console.info(point.temp[0][0]);-->
-    <!--//                var x = point.temp[0][0];-->
-    <!--//                var y = point.temp[0][1];-->
-    <!--//                // add the point-->
-    <!--//                chart.series[0].addPoint([x, y], true, shift);-->
-    <!--//-->
-    <!--//                // call it again after one second-->
-    <!--//                setTimeout(requestCurrentTemp, 1000);-->
-    <!--//            },-->
-    <!--//            cache: false-->
-    <!--//        });-->
-    <!--//    }-->
-    <!--//-->
-    <!--//    function requestTempHistory() {-->
-    <!--//        $.ajax({-->
-    <!--//            url: 'api/history',-->
-    <!--//            success: function (history) {-->
-    <!--//                chart.series[0].setData = history.log_data;-->
-    <!--//                // loop though history and add the point to the chart-->
-    <!--////                for (var i = 0; i < history.log_data.length; i++) {-->
-    <!--////                    var x = history.log_data[i][0];-->
-    <!--////                    var y = history.log_data[i][1];-->
-    <!--////-->
-    <!--////                    chart.series[0].addPoint([x, y], true, false);-->
-    <!--////                }-->
-    <!--//            },-->
-    <!--//            cache: false-->
-    <!--//        })-->
-    <!--//    }-->
-    <!--//-->
-    <!--//    $(document).ready(function () {-->
-    <!--//        chart = new Highcharts.Chart({-->
-    <!--//            chart: {-->
-    <!--//                renderTo: 'container',-->
-    <!--//                defaultSeriesType: 'spline',-->
-    <!--//                events: {-->
-    <!--//                    load: requestCurrentTemp-->
-    <!--//                }-->
-    <!--//            },-->
-    <!--//            title: {-->
-    <!--//                text: 'Freezer Temperature'-->
-    <!--//            },-->
-    <!--//            xAxis: {-->
-    <!--//                type: 'datetime',-->
-    <!--//                tickPixelInterval: 150,-->
-    <!--//                maxZoom: 20 * 1000-->
-    <!--//            },-->
-    <!--//            yAxis: {-->
-    <!--//                minPadding: 0.2,-->
-    <!--//                maxPadding: 0.2,-->
-    <!--//                title: {-->
-    <!--//                    text: 'Temperature F',-->
-    <!--//                    margin: 80-->
-    <!--//                }-->
-    <!--//            },-->
-    <!--//            series: [{-->
-    <!--//                name: 'Freezer',-->
-    <!--//                data: []-->
-    <!--//            }]-->
-    <!--//        });-->
-    <!--//    });-->
+<!--/**-->
+<!--* Request data from the server, add it to the graph and set a timeout to request again-->
+<!--*/-->
+<!--//    function requestCurrentTemp() {-->
+<!--//        $.ajax({-->
+<!--//            url: 'api/temp',-->
+<!--//            success: function (point) {-->
+<!--//                var series = chart.series[0],-->
+<!--//                        shift = series.data.length > 20; // shift if the series is longer than 20-->
+<!--//-->
+<!--//                // console.info(point.temp[0][0]);-->
+<!--//                var x = point.temp[0][0];-->
+<!--//                var y = point.temp[0][1];-->
+<!--//                // add the point-->
+<!--//                chart.series[0].addPoint([x, y], true, shift);-->
+<!--//-->
+<!--//                // call it again after one second-->
+<!--//                setTimeout(requestCurrentTemp, 1000);-->
+<!--//            },-->
+<!--//            cache: false-->
+<!--//        });-->
+<!--//    }-->
+<!--//-->
+<!--//    function requestTempHistory() {-->
+<!--//        $.ajax({-->
+<!--//            url: 'api/history',-->
+<!--//            success: function (history) {-->
+<!--//                chart.series[0].setData = history.log_data;-->
+<!--//                // loop though history and add the point to the chart-->
+<!--////                for (var i = 0; i < history.log_data.length; i++) {-->
+<!--////                    var x = history.log_data[i][0];-->
+<!--////                    var y = history.log_data[i][1];-->
+<!--////-->
+<!--////                    chart.series[0].addPoint([x, y], true, false);-->
+<!--////                }-->
+<!--//            },-->
+<!--//            cache: false-->
+<!--//        })-->
+<!--//    }-->
+<!--//-->
+<!--//    $(document).ready(function () {-->
+<!--//        chart = new Highcharts.Chart({-->
+<!--//            chart: {-->
+<!--//                renderTo: 'container',-->
+<!--//                defaultSeriesType: 'spline',-->
+<!--//                events: {-->
+<!--//                    load: requestCurrentTemp-->
+<!--//                }-->
+<!--//            },-->
+<!--//            title: {-->
+<!--//                text: 'Freezer Temperature'-->
+<!--//            },-->
+<!--//            xAxis: {-->
+<!--//                type: 'datetime',-->
+<!--//                tickPixelInterval: 150,-->
+<!--//                maxZoom: 20 * 1000-->
+<!--//            },-->
+<!--//            yAxis: {-->
+<!--//                minPadding: 0.2,-->
+<!--//                maxPadding: 0.2,-->
+<!--//                title: {-->
+<!--//                    text: 'Temperature F',-->
+<!--//                    margin: 80-->
+<!--//                }-->
+<!--//            },-->
+<!--//            series: [{-->
+<!--//                name: 'Freezer',-->
+<!--//                data: []-->
+<!--//            }]-->
+<!--//        });-->
+<!--//    });-->
 
 <!--</script>-->
 </body>
