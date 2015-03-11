@@ -85,7 +85,7 @@ app.controller("ChartController", ['$scope', '$http', 'chartHistoryFactory', fun
                         }
                     }]
                 })
-                getLastPoint(chart)
+                //getLastPoint(chart)
             })
             .error(function (error) {
                 $scope.status = 'Unable to load history: ' + error.message;
@@ -121,7 +121,7 @@ app.controller("ChartController", ['$scope', '$http', 'chartHistoryFactory', fun
             .success(function (data) {
                 chart.series[0].setData(data.log_data);
                 chart.hideLoading();
-                getLastPoint(chart);
+                //getLastPoint(chart);
             })
             .error(function (error) {
                 $scope.apiStatus = {

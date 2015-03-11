@@ -2,7 +2,7 @@
 import time
 from datetime import datetime
 
-from flask import Flask, jsonify, render_template, request, flash
+from flask import Flask, jsonify, render_template, request
 
 from settings import AppSettings
 from models import *
@@ -18,6 +18,8 @@ app_settings = AppSettings()
 
 if LINUX:
     lcdDisplay = lcd.Jhd1313m1(0, 0x3E, 0x62)
+    lcdDisplay.setColor(0, 0, 0)
+    lcdOn = False
 
 
 @app.route('/')
@@ -25,7 +27,6 @@ def hello_world():
     try:
         return render_template('base.html')
     except Exception as e:
-        print e
         return e
 
 
@@ -160,12 +161,32 @@ def lcd_switch():
         if LINUX:
             if int(value) == 0:
                 lcdDisplay.setColor(0, 0, 0)
+                lcdOn = False
             else:
                 lcdDisplay.setColor(255, 0, 0)
+                lcdOn = True
+
+        if WINDOWS:
+            if int(value) == 0:
+                lcdOn = False
+            else:
+                lcdOn = True
+
     except Exception as e:
         error = True
     finally:
-        return jsonify({'message': 'LCD has been switched.'})
+        lcdStatus = 'on' if lcdOn else 'off'
+
+        if error:
+            content = 'error switching lcd backlight.'
+        else:
+            content = 'LCD backlight is ' + lcdStatus
+
+        return jsonify({'message': {
+            'lcdOn': lcdOn,
+            'content': content,
+            'error': error
+        }})
 
 
 @app.route('/settings/change_lcd_color')

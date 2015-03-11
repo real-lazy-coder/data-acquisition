@@ -1,0 +1,8 @@
+[Unit]
+Description=DataAcquisitionServer
+
+[Service]
+ExecStart=/usr/bin/python /home/root/data-acquisition/server.pyc
+
+[Install]
+WantedBy=multi-user.target

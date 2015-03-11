@@ -7,7 +7,14 @@ app.controller('SettingsController', ['$scope', '$http', function ($scope, $http
 
         $http.get(apiUrl)
             .success(function(result){
-                toastr.info(result.message);
+                message = result.message;
+                $scope.lcdSwitch = Boolean(message.lcdOn);
+                var error = Boolean(message.error);
+                if(error){
+                    toastr.error(message.error);
+                }else {
+                    toastr.info(result.message.content);
+                }
             })
             .error(function(){
                 toastr.error('error switching LCD');
