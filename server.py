@@ -2,7 +2,7 @@
 import time
 from datetime import datetime
 
-from flask import Flask, jsonify, render_template, request, url_for
+from flask import Flask, jsonify, render_template, request, flash
 
 from settings import AppSettings
 from models import *
@@ -137,7 +137,7 @@ def reboot():
     Reboot the operating system
     """
     # TODO: Write reboot code
-    return 'Rebooting Unit...'
+    return jsonify({'message': 'rebooting...'})
 
 
 @app.route('/settings/wifi')
@@ -146,6 +146,26 @@ def wifi_setup():
     Setup wifi on device
     """
     return 'Setup wifi...'
+
+
+@app.route('/settings/lcdSwitch')
+def lcd_switch():
+    error = False
+    try:
+        value = request.args.get('value')  # boolean value
+
+        if value is None:
+            raise ValueError
+
+        if LINUX:
+            if int(value) == 0:
+                lcdDisplay.setColor(0, 0, 0)
+            else:
+                lcdDisplay.setColor(255, 0, 0)
+    except Exception as e:
+        error = True
+    finally:
+        return jsonify({'message': 'LCD has been switched.'})
 
 
 @app.route('/settings/change_lcd_color')

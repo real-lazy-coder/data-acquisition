@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="{{url_for('static', filename='bootstrap-3.3.2-dist/css/bootstrap.min.css')}}" rel="stylesheet">
     <link href="{{url_for('static', filename='css/angular-busy.min.css')}}" rel="stylesheet">
-    <link href="{{url_for('static', filename='css/angular-toggle-switch-bootstrap-3.css')}}" rel="stylesheet">
+    <link href="{{url_for('static', filename='css/angular-toggle-switch-bootstrap.css')}}" rel="stylesheet">
+    <link href="{{url_for('static', filename='css/angular-toggle-switch.css')}}" rel="stylesheet">
+    <link href="{{url_for('static', filename='toastr/toastr.min.css')}}" rel="stylesheet">
     <link href="{{url_for('static', filename='css/main.css')}}" rel="stylesheet">
 </head>
 <body ng-app="DataLogger">
@@ -48,6 +50,8 @@
 <!-- highcharts scripts -->
 <script src="{{url_for('static', filename='js/highstock.js')}}"></script>
 <script src="{{url_for('static', filename='js/exporting.js')}}"></script>
+
+<script src="{{url_for('static', filename='toastr/toastr.min.js')}}"></script>
 <!--<script src="../static/js/customChart.js"></script>-->
 
 <!-- angular scripts controllers, factories, etc... -->
@@ -56,6 +60,7 @@
 <!--<script src="{{url_for('static', filename='js/controllers/mainController.js')}}"></script>-->
 <script src="{{url_for('static', filename='js/controllers/NavbarController.js')}}"></script>
 <script src="{{url_for('static', filename='js/controllers/ChartController.js')}}"></script>
+<script src="{{url_for('static', filename='js/controllers/SettingsController.js')}}"></script>
 
 <!--<script>-->
 <!--//    var chart; // global-->
